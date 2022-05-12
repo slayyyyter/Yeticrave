@@ -11,7 +11,25 @@ $catg=[
     ['Name'=>'2014 Rossignol District Snowboard', 'Category'=>"$cat[3]", 'Price'=>'7500', 'URL'=>'img/lot-5.jpg'],
     ['Name'=>'2014 Rossignol District Snowboard', 'Category'=>"$cat[5]", 'Price'=>'7500', 'URL'=>'img/lot-6.jpg']
 ];
+
+function num_format($cost)
+{
+	$cost = ceil($cost);
+	if ($cost>1000)
+	    $cost = number_format($cost, 0, ",", " ");
+	$cost .= '<b class="rub">p</b>';
+	return cost;
+}
+
+function time_stop()
+{
+	$time2 = strtotime('2022-05-12 24:00');
+	$time1 - time();
+	$dif = $time2 - $time1;
+	return gmdate('H:i', $dif);
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -96,10 +114,10 @@ $catg=[
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?=$newI["Price"]?><b class="rub">р</b></span>
+                            <span class="lot__cost"><?=num_format($newI["Price"])?><b class="rub">р</b></span>
                         </div>
                         <div class="lot__timer timer">
-                            12:23
+                            <?=time_stop()?>
                         </div>
                     </div>
                 </div>
