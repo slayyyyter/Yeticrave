@@ -18,13 +18,13 @@ function num_format($cost)
 	if ($cost>1000)
 	    $cost = number_format($cost, 0, ",", " ");
 	$cost .= '<b class="rub">p</b>';
-	return cost;
+	return $cost;
 }
 
 function time_stop()
 {
 	$time2 = strtotime('2022-05-12 24:00');
-	$time1 - time();
+	$time1 = time();
 	$dif = $time2 - $time1;
 	return gmdate('H:i', $dif);
 }
@@ -93,6 +93,7 @@ function time_stop()
             <li class="promo__item promo__item--boards">
                 <a class="promo__link" href="pages/all-lots.html"><?=$newl?></a>
             </li>
+            <?php } ?>
         </ul>
     </section>
     <section class="lots">
@@ -122,6 +123,7 @@ function time_stop()
                     </div>
                 </div>
             </li>
+            <?php } ?>
         </ul>
     </section>
 </main>
@@ -137,6 +139,7 @@ function time_stop()
             <li class="nav__item">
                 <a href="pages/all-lots.html"><?=$new?></a>
             </li>
+         <?php } ?>
         </ul>
     </nav>
     <div class="main-footer__bottom container">
