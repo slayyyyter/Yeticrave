@@ -6,7 +6,7 @@
         <?
         while ($catd = current($cat)) {
             ?>
-            <li class="promo__item promo__item--<?=$cat["eng"] ?>">
+            <li class="promo__item promo__item--<?=$catd["image"] ?>">
                 <a class="promo__link" href="pages/all-lots.html"><?=$catd["catg_name"]?></a>
             </li>
             <?

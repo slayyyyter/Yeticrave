@@ -63,7 +63,7 @@
             {
                 ?>
                 <li class="nav__item">
-                    <a href="pages/all-lots.html"><?=$catd["name_category"] ?></a>
+                    <a href="pages/all-lots.html"><?=$catd["catg_name"] ?></a>
                 </li>
                 <?
             }
