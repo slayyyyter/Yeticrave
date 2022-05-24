@@ -1,140 +1,63 @@
 <?php
 require_once ('functions.php');
-require_once ('data.php');
+require_once ('conn.php');
 
-function clear_data($clear)
-{
-    $clear = trim($clear);
-    $clear = stripslashes($clear);
-    $clear = strip_tags($clear);
-    $clear = htmlspecialchars($clear);
-    return $clear;
+$i=0;
+$form_class = "";
+$div_class = array("","","","","","","");
+$check = false;
+/*
+$form_items = array("lot-name" =>$_POST['lot-name'],"category" =>$_POST['category'],"message" =>$_POST['message'],
+    "lot-img" =>$_POST['lot-img'],"lot-rate" =>$_POST['lot-rate'],"lot-step" =>$_POST['lot-step'],"lot-date" =>$_POST['lot-date']);
+*/
+$form_items = array($_POST['lot-name'],$_POST['category'],$_POST['message'],
+    444,$_POST['lot-rate'],$_POST['lot-step'],$_POST['lot-date']);
+if(filter_var($form_items[4],FILTER_SANITIZE_NUMBER_INT)!=$form_items[4]){
+    $div_class[5] = "form__item--invalid";
+    $check = true;
 }
-
-
-
-$pattern = '/^[ 0-9]+$/';
-
-$err = [];
-$message = [];
-$flag = 0;
-$form = '';
-
-$connection = new mysqli('127.0.0.1', 'root', '', 'yeticrave');
-
-
-
-$query1 = "select id_category from category where name = '$catg_name'";
-
-$query = "insert into lot (id_winner,id_user,id_category,creation_date,lot_name,expl,img,start_price,end_date,step) value (now(),'$lot_name','$expl','$img',$start_price,'$end_date',$step, '1', NULL,($query1))";
-$category_result = $connection->query($query);
-
-if($_SERVER['REQUEST_METHOD']=='POST')
-{
-    $lot_name = clear_data($_POST['lot_name']);
-    $catg_name = clear_data($_POST['catg_name']);
-    $expl = clear_data($_POST['expl']);
-    $img = clear_data($_POST['img']);
-    $start_price = clear_data($_POST['start_price']);
-    $step = clear_data($_POST['step']);
-    $end_date = clear_data($_POST['end_date']);
-
-    if(empty($lot_name))
-    {
-        $err['lot_name'] = 'form__item--invalid';
-        $flag = 1;
+if(filter_var($form_items[5],FILTER_SANITIZE_NUMBER_INT)!=$form_items[5]){
+    $div_class[6] = "form__item--invalid";
+    $check = true;
+}
+foreach ($form_items as $form_item){
+    $i++;
+    if($form_item==''){
+        $form_class = "form--invalid";
+        $div_class[$i] = "form__item--invalid";
+        $check = true;
     }
-    if($catg_name=="Выберите категорию")
-    {
-        $err['catg_name'] = 'form__item--invalid';
-        $flag = 1;
-    }
-    if(empty($expl))
-    {
-        $err['expl'] = 'form__item--invalid';
-        $flag = 1;
-    }
-    if(empty($img))
-    {
-        $err['img'] = 'form__item--invalid';
-        $flag = 1;
-    }
-    if(empty($start_price))
-    {
-        $err['start_price'] = 'form__item--invalid';
-        $message['start_price']= '<span class="form__error">Введите начальную цену</span>';
-        $flag = 1;
-    }
-    else
-    {
-        if(!preg_match($pattern, $start_price))
-        {
-            $err['start_price'] = 'form__item--invalid';
-            $message['start_price'] = '<span class="form__error">Используйте только цифры</span>';
-            $flag = 1;
-        }
-    }
-    if(empty($step))
-    {
-        $err['step'] = 'form__item--invalid';
-        $message['step']= '<span class="form__error">Введите шаг ставки</span>';
-        $flag = 1;
-    }
-    else
-    {
-        if(!preg_match($pattern, $step)) {
-            $err['step'] = 'form__item--invalid';
-            $message['step'] = '<span class="form__error">Используйте только цифры</span>';
-            $flag = 1;
-        }
-    }
-    if(empty($end_date))
-    {
-        $err['end_date'] = 'form__item--invalid';
-        $message['end_date'] = 'Введите дату завершения торгов';
-        $flag = 1;
-    }
-    else
-    {
-        if($end_date)
-        {
-            $err['end_date'] = 'form__item--invalid';
-            $message['end_date'] = '<span class="form__error">Введите актуальную дату завершения торгов</span>';
-            $flag = 1;
-        }
-    }
-    if(!empty($err))
-    {
-        $form = 'form--invalid';
-    }
-
-    $data_main = ['cat'=>$cat,'err'=>$err,'message'=>$message,'form'=>$form];
-
-    $page_content = include_template("add.php", $data_main);
-
-    $layout_content = include_template('layout.php', [
-        'page_content' => $page_content,
-        'cat'=>$cat,
-        'title' => 'Добавление лота',
-        'is_auth'=>$is_auth,
-        'user_name' => $user_name
+}
+if($check){
+    $page_content = include_template('add-lot.php',  [
+        'cat' => $cat,
+        'form_class' => $form_class,
+        'div_class' => $div_class,
+        'form_items' => $form_items
     ]);
-
+    $layout_content = include_template('layout.php', [
+        'content' => $page_content,
+        'page_name' => 'Добавление лота',
+        'is_auth' => $is_auth,
+        'user_name' => $user_name,
+        'cat' => $cat
+    ]);
     print($layout_content);
 }
-else
-{
-    $data_main = ['cat'=>$cat];
+else{
+    $uploaddir = 'img/';
+    $uploadfile = $uploaddir . basename($_FILES['lot-img']['name']);
+    move_uploaded_file($_FILES['lot-img']['tmp_name'], $uploadfile);
+    foreach ($cat as $catd){
+        if($catd['catg_name']==$form_items[1]){
+            $s = $catd['id_category'];
+        }
+    }
+    $sql ="INSERT INTO `lot` (`date_create`, `lot_name`, `expl`, `img`, `start_price`, `end_date`, `step`, `id_author`, `id_winner`, `id_category`) VALUES ('2022-05-20','$form_items[0]','$form_items[2]','$uploadfile','$form_items[4]','$form_items[6]','$form_items[5]',1,1,'$s')";
+    $result = mysqli_query($link, $sql);
+    $sql = "SELECT * FROM `lot` group BY id_lot DESC LIMIT 1";
+    $result = mysqli_query($link, $sql);
+    $created_lot = $result ->fetch_assoc();
+    header('Location: ../lot.php?id='.$created_lot['id_lot']);
 
-    $page_content = include_template("add.php", $data_main);
-
-    $layout_content = include_template('layout.php', [
-        'page_content' => $page_content,
-        'cat'=>$cat,
-        'title' => 'Добавление лота',
-        'is_auth'=>$is_auth,
-        'user_name' => $user_name
-    ]);
-
-    print($layout_content);
 }
