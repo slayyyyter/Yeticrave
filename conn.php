@@ -1,6 +1,4 @@
 <?php
-require_once('functions.php');
-
 $link = mysqli_connect('localhost', 'root', '','yeticrave');
 mysqli_set_charset($link, 'utf8');
 
@@ -31,21 +29,3 @@ else {
         $content = include_template('error.php', ['error' => $error]);
     }
 }
-
-
-$page_content = include_template('index.php',  [
-    'cat' => $cat,
-    'catg' => $catg
-]);
-$layout_content = include_template('layout.php', [
-    'content' => $page_content,
-    'page_name' => 'Главная страница',
-    'is_auth' => $is_auth,
-    'user_name' => $user_name,
-    'cat' => $cat
-]);
-
-print($layout_content);
-
-?>
-
